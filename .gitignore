@@ -23,6 +23,9 @@
 # misc
 .DS_Store
 *.pem
+/public/sw.js
+/public/workbox-*.js
+/public/swe-worker-*.js
 
 # debug
 npm-debug.log*
