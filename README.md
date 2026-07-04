@@ -1,5 +1,7 @@
 # My Loyalty Cards
 
+<img src="public/logo.svg" alt="My Loyalty Cards logo" width="64" height="64" align="left" />
+
 A lightweight, privacy-first PWA for storing and displaying your loyalty cards — no account, no server, no tracking.
 
 Your cards live entirely in the URL. Add a card, copy the link, bookmark it or save it to your home screen. That's it.
@@ -17,10 +19,34 @@ Your cards live entirely in the URL. Add a card, copy the link, bookmark it or s
 
 | Code | Store |
 |------|-------|
-| `cks` | Checkers |
-| `pnp` | Pick n Pay |
+| `xts` | Checkers Xtra Savings |
+| `pnp` | Pick n Pay Smart Shopper |
+| `wlw` | Woolworths MyDifference |
+| `cls` | Clicks ClubCard |
+| `dch` | Dis-Chem Better Rewards |
+| `spr` | SPAR Rewards |
+| `okf` | OK Count On |
+| `mak` | Makro mCard |
+| `gme` | Game more rewards |
+| `mrp` | Mr Price Reward |
+| `smw` | Sportsman's Warehouse |
+| `tsp` | TOPS at SPAR |
+| `med` | MediRite |
+| `cna` | CNA |
+| `flm` | Food Lover's Market |
+| `spu` | Spur Family Card |
+| `dis` | Discovery Vitality |
+| `fnb` | FNB eBucks |
+| `cap` | Capitec Live Better |
+| `tfg` | TFG Rewards |
+| `mtn` | MTN mpulse |
+| `eng` | Engen |
+| `lka` | Lekka |
 | `bld` | Builders Warehouse |
 | `pkr` | Parkrun |
+| `clc` | Cell C |
+| `tru` | Toys R Us |
+| `skr` | Ster Kinekor |
 
 ## URL Format
 
