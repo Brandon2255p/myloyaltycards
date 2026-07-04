@@ -7,9 +7,10 @@ import bwipjs from 'bwip-js';
 interface BarcodeProps {
   value: string;
   type: BarcodeType;
+  disableFullscreen?: boolean;
 }
 
-export default function Barcode({ value, type }: BarcodeProps) {
+export default function Barcode({ value, type, disableFullscreen }: BarcodeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const fullScreenCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -26,13 +27,6 @@ export default function Barcode({ value, type }: BarcodeProps) {
           scale: 4,
           height: 10,
           width: 10,
-        });
-      } else if (type === 'ean13') {
-        bwipjs.toCanvas(canvas, {
-          bcid: 'ean13',
-          text: value,
-          scale: 3,
-          height: 10,
         });
       } else {
         bwipjs.toCanvas(canvas, {
@@ -69,14 +63,6 @@ export default function Barcode({ value, type }: BarcodeProps) {
           scale: 10,
           height: 10,
           width: 10,
-          textcolor: '#000000',
-        });
-      } else if (type === 'ean13') {
-        bwipjs.toCanvas(canvas, {
-          bcid: 'ean13',
-          text: value,
-          scale: 3,
-          height: 10,
           textcolor: '#000000',
         });
       } else {
@@ -126,9 +112,9 @@ export default function Barcode({ value, type }: BarcodeProps) {
   return (
     <>
       <div
-        className="flex justify-center cursor-pointer overflow-hidden"
-        onClick={() => setIsFullScreen(true)}
-        title="Tap to view full screen"
+        className={`flex justify-center overflow-hidden ${disableFullscreen ? '' : 'cursor-pointer'}`}
+        onClick={disableFullscreen ? undefined : () => setIsFullScreen(true)}
+        title={disableFullscreen ? undefined : 'Tap to view full screen'}
       >
         <canvas
           ref={canvasRef}

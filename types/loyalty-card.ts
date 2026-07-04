@@ -1,4 +1,4 @@
-export type BarcodeType = 'code128' | 'qr' | 'ean13';
+export type BarcodeType = 'bar' | 'qr';
 
 export type CompanyCode =
   | 'xts' | 'pnp' | 'wlw' | 'cls' | 'dch' | 'spr'

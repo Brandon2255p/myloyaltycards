@@ -4,11 +4,10 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { CompanyCode, BarcodeType, COMPANY_NAMES, COMPANY_SEARCH_TERMS } from '@/types/loyalty-card';
 import Barcode from './Barcode';
 
-const BARCODE_TYPES: BarcodeType[] = ['code128', 'qr', 'ean13'];
+const BARCODE_TYPES: BarcodeType[] = ['bar', 'qr'];
 const BARCODE_LABELS: Record<BarcodeType, string> = {
-  code128: 'Code 128',
+  bar: 'Barcode',
   qr: 'QR Code',
-  ean13: 'EAN-13',
 };
 
 interface AddCardModalProps {
@@ -25,7 +24,7 @@ function getNextBarcodeType(current: BarcodeType): BarcodeType {
 export default function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalProps) {
   const [company, setCompany] = useState<CompanyCode>('pnp');
   const [cardNumber, setCardNumber] = useState('');
-  const [barcodeType, setBarcodeType] = useState<BarcodeType>('code128');
+  const [barcodeType, setBarcodeType] = useState<BarcodeType>('bar');
   const [search, setSearch] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -51,7 +50,7 @@ export default function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalPro
       setShowDropdown(false);
       setCompany('pnp');
       setCardNumber('');
-      setBarcodeType('code128');
+      setBarcodeType('bar');
     }
   }, [isOpen]);
 
@@ -196,7 +195,7 @@ export default function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalPro
                   </div>
                   <p className="font-mono text-lg font-bold tracking-wider py-2">{cardNumber}</p>
                   <div className="p-3 bg-white rounded-lg">
-                    <Barcode value={cardNumber} type={barcodeType} />
+                    <Barcode value={cardNumber} type={barcodeType} disableFullscreen />
                   </div>
                 </div>
               </div>

@@ -16,7 +16,7 @@ export function parseCardsFromUrl(): LoyaltyCard[] {
     const parts = cardStr.split(':');
     const company = parts[0] as CompanyCode;
     const cardNumber = parts[1];
-    const barcodeType = (parts[2] as BarcodeType) || 'code128';
+    const barcodeType = (parts[2] as BarcodeType) || 'bar';
     return {
       id: `${company}-${cardNumber}`,
       company,

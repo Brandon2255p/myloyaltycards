@@ -75,8 +75,10 @@ export default function Home() {
     <div className="h-screen flex flex-col overflow-hidden">
       <header className="navbar bg-base-200 shadow-sm px-6 py-4 shrink-0">
         <div className="flex-1 flex items-center gap-3">
-          <Image src="/logo.svg" alt="My Loyalty Cards logo" width={48} height={48} className="text-base-content" />
-          <h1 className="text-2xl font-bold">My Loyalty Cards</h1>
+          <Image src="/logo.svg" alt="My Loyalty Cards logo" width={72} height={72} className="text-base-content" />
+          <div>
+            <h1 className="text-2xl font-bold">My Loyalty Cards</h1>
+          </div>
         </div>
         <div className="flex-none gap-2">
           <button

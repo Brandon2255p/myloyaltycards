@@ -4,11 +4,10 @@ import { useRef, useCallback } from 'react';
 import { LoyaltyCard, COMPANY_NAMES, BarcodeType } from '@/types/loyalty-card';
 import Barcode from './Barcode';
 
-const BARCODE_TYPES: BarcodeType[] = ['code128', 'qr', 'ean13'];
+const BARCODE_TYPES: BarcodeType[] = ['bar', 'qr'];
 const BARCODE_LABELS: Record<BarcodeType, string> = {
-  code128: 'Code 128',
+  bar: 'Barcode',
   qr: 'QR Code',
-  ean13: 'EAN-13',
 };
 
 interface LoyaltyCardProps {
