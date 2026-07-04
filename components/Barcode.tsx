@@ -53,7 +53,7 @@ export default function Barcode({ value, type, disableFullscreen }: BarcodeProps
     const canvas = fullScreenCanvasRef.current;
     if (!canvas || !isFullScreen) return;
 
-    const maxW = window.innerWidth - 48;
+    const maxW = window.innerWidth - 32;
 
     try {
       if (type === 'qr') {
@@ -69,23 +69,23 @@ export default function Barcode({ value, type, disableFullscreen }: BarcodeProps
         bwipjs.toCanvas(canvas, {
           bcid: 'code128',
           text: value,
-          scale: 2,
+          scale: 3,
           height: 10,
           includetext: true,
           textcolor: '#000000',
         });
-      }
-      if (canvas.width > maxW) {
-        const ratio = maxW / canvas.width;
-        const scaledW = Math.floor(canvas.width * ratio);
-        const scaledH = Math.floor(canvas.height * ratio);
-        const offscreen = document.createElement('canvas');
-        offscreen.width = canvas.width;
-        offscreen.height = canvas.height;
-        offscreen.getContext('2d')?.drawImage(canvas, 0, 0);
-        canvas.width = scaledW;
-        canvas.height = scaledH;
-        canvas.getContext('2d')?.drawImage(offscreen, 0, 0, scaledW, scaledH);
+        if (canvas.width < maxW) {
+          const ratio = maxW / canvas.width;
+          const scaledW = Math.floor(canvas.width * ratio);
+          const scaledH = Math.floor(canvas.height * ratio);
+          const offscreen = document.createElement('canvas');
+          offscreen.width = canvas.width;
+          offscreen.height = canvas.height;
+          offscreen.getContext('2d')?.drawImage(canvas, 0, 0);
+          canvas.width = scaledW;
+          canvas.height = scaledH;
+          canvas.getContext('2d')?.drawImage(offscreen, 0, 0, scaledW, scaledH);
+        }
       }
     } catch {
       const ctx = canvas.getContext('2d');
@@ -129,7 +129,7 @@ export default function Barcode({ value, type, disableFullscreen }: BarcodeProps
           onClick={() => setIsFullScreen(false)}
         >
           <div
-            className="modal-box bg-white max-w-[calc(100vw-48px)] max-h-[calc(100vh-120px)] overflow-hidden"
+            className="modal-box bg-white max-w-[calc(100vw-32px)] max-h-[calc(100vh-120px)] overflow-hidden px-4"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-center p-4">

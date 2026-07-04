@@ -10,7 +10,7 @@ Your cards live entirely in the URL. Add a card, copy the link, bookmark it or s
 
 - **URL-based storage** — cards are encoded in the query string; nothing is stored server-side
 - **Share via link** — copy the URL and send it to yourself or anyone else
-- **Barcode rendering** — supports Code 128, QR Code, and EAN-13 per card
+- **Barcode rendering** — supports Barcode and QR Code per card
 - **Full-screen barcode** — tap any barcode to open it full-screen for scanning at the till
 - **Offline support** — works without a connection once loaded (PWA service worker)
 - **Add to Home Screen** — installable on iOS and Android for quick access
@@ -47,11 +47,15 @@ Your cards live entirely in the URL. Add a card, copy the link, bookmark it or s
 | `clc` | Cell C |
 | `tru` | Toys R Us |
 | `skr` | Ster Kinekor |
+| `dsm` | Discovery Medical Aid |
+| `idn` | ID Number |
+| `itn` | Income Tax Number |
+| `pst` | Passport Number |
 
 ## URL Format
 
 ```
-/?cards=cks:ABC123:code128,pnp:XYZ789:qr
+/?cards=cks:ABC123:bar,pnp:XYZ789:qr
 ```
 
 Each card is encoded as `company:cardNumber:barcodeType`, comma-separated.

@@ -3,10 +3,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { LoyaltyCard, BarcodeType, CompanyCode } from '@/types/loyalty-card';
-import { parseCardsFromUrl, updateUrl, copyShareUrl } from '@/lib/url-utils';
+import { loadCards, updateUrl, copyShareUrl } from '@/lib/url-utils';
 import LoyaltyCardComponent from '@/components/LoyaltyCard';
 import AddCardModal from '@/components/AddCardModal';
 import DeleteConfirmDialog from '@/components/DeleteConfirmDialog';
+import AddToHomeScreenBanner from '@/components/AddToHomeScreenBanner';
+import ShareDialog from '@/components/ShareDialog';
+import BackupDialog from '@/components/BackupDialog';
 
 export default function Home() {
   const [cards, setCards] = useState<LoyaltyCard[]>([]);
@@ -14,12 +17,12 @@ export default function Home() {
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; company: CompanyCode; cardNumber: string } | null>(null);
   const [mounted, setMounted] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [showBackupDialog, setShowBackupDialog] = useState(false);
 
   useEffect(() => {
-    const parsedCards = parseCardsFromUrl();
-    /* eslint-disable react-hooks/set-state-in-effect */
-    setCards(parsedCards);
-    /* eslint-enable react-hooks/set-state-in-effect */
+    const loadedCards = loadCards();
+    setCards(loadedCards);
     setMounted(true);
   }, []);
 
@@ -74,23 +77,39 @@ export default function Home() {
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       <header className="navbar bg-base-200 shadow-sm px-6 py-4 shrink-0">
-        <div className="flex-1 flex items-center gap-3">
-          <Image src="/logo.svg" alt="My Loyalty Cards logo" width={72} height={72} className="text-base-content" />
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
+          <div className="flex items-center gap-3">
+            <Image src="/logo.svg" alt="My Loyalty Cards logo" width={72} height={72} className="text-base-content" />
             <h1 className="text-2xl font-bold">My Loyalty Cards</h1>
           </div>
-        </div>
-        <div className="flex-none gap-2">
-          <button
-            className="btn btn-sm btn-ghost"
-            onClick={handleShare}
-            title="Share"
-          >
-            {copied ? '✓' : '📋'}
-          </button>
-          <button className="btn btn-primary btn-sm" onClick={() => setIsAddModalOpen(true)}>
-            + Add Card
-          </button>
+          <div className="flex-none gap-2 flex items-center sm:ml-auto">
+            {cards.length > 0 && (
+              <>
+                <button
+                  className="btn btn-sm btn-ghost"
+                  onClick={() => setShowShareDialog(true)}
+                  title="Share cards"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                </button>
+                <button
+                  className="btn btn-sm btn-outline"
+                  onClick={() => setShowBackupDialog(true)}
+                  title="Backup cards"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                  </svg>
+                  Backup
+                </button>
+              </>
+            )}
+            <button className="btn btn-primary btn-sm" onClick={() => setIsAddModalOpen(true)}>
+              + Add Card
+            </button>
+          </div>
         </div>
       </header>
 
@@ -124,6 +143,8 @@ export default function Home() {
         onAdd={handleAddCard}
       />
 
+      <AddToHomeScreenBanner />
+
       {deleteTarget && (
         <DeleteConfirmDialog
           isOpen={!!deleteTarget}
@@ -133,6 +154,18 @@ export default function Home() {
           onCancel={handleDeleteCancel}
         />
       )}
+
+      <ShareDialog
+        cards={cards}
+        isOpen={showShareDialog}
+        onClose={() => setShowShareDialog(false)}
+      />
+
+      <BackupDialog
+        cards={cards}
+        isOpen={showBackupDialog}
+        onClose={() => setShowBackupDialog(false)}
+      />
     </div>
   );
 }

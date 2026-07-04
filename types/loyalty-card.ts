@@ -5,7 +5,8 @@ export type CompanyCode =
   | 'okf' | 'mak' | 'gme' | 'mrp' | 'smw' | 'tsp'
   | 'med' | 'cna' | 'flm' | 'spu' | 'dis' | 'fnb'
   | 'cap' | 'tfg' | 'mtn' | 'eng' | 'lka' | 'bld'
-  | 'pkr' | 'clc' | 'tru' | 'skr';
+  | 'pkr' | 'clc' | 'tru' | 'skr'
+  | 'dsm' | 'idn' | 'itn' | 'pst';
 
 export interface LoyaltyCard {
   id: string;
@@ -43,6 +44,10 @@ export const COMPANY_NAMES: Record<CompanyCode, string> = {
   clc: 'Cell C',
   tru: 'Toys R Us',
   skr: 'Ster Kinekor',
+  dsm: 'Discovery Medical Aid',
+  idn: 'ID Number',
+  itn: 'Income Tax Number',
+  pst: 'Passport Number',
 };
 
 export const COMPANY_SEARCH_TERMS: Record<CompanyCode, string> = {
@@ -74,4 +79,8 @@ export const COMPANY_SEARCH_TERMS: Record<CompanyCode, string> = {
   clc: 'cell c mobile telecom',
   tru: 'toys r us toys',
   skr: 'ster kinekor cinema movies',
+  dsm: 'discovery medical aid health medical',
+  idn: 'id number identity sa',
+  itn: 'income tax number sars tax',
+  pst: 'passport number travel',
 };
