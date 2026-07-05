@@ -6,7 +6,7 @@ export type CompanyCode =
   | 'med' | 'cna' | 'flm' | 'spu' | 'dis' | 'fnb'
   | 'cap' | 'tfg' | 'mtn' | 'eng' | 'lka' | 'bld'
   | 'pkr' | 'clc' | 'tru' | 'skr'
-  | 'dsm' | 'idn' | 'itn' | 'pst';
+  | 'dsm' | 'idn' | 'itn' | 'pst' | 'vra';
 
 export interface LoyaltyCard {
   id: string;
@@ -48,6 +48,7 @@ export const COMPANY_NAMES: Record<CompanyCode, string> = {
   idn: 'ID Number',
   itn: 'Income Tax Number',
   pst: 'Passport Number',
+  vra: 'Virgin Active',
 };
 
 export const COMPANY_SEARCH_TERMS: Record<CompanyCode, string> = {
@@ -83,4 +84,5 @@ export const COMPANY_SEARCH_TERMS: Record<CompanyCode, string> = {
   idn: 'id number identity sa',
   itn: 'income tax number sars tax',
   pst: 'passport number travel',
+  vra: 'virgin active gym fitness health club',
 };
