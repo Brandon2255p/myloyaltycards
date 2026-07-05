@@ -129,18 +129,16 @@ export default function Barcode({ value, type, disableFullscreen }: BarcodeProps
           onClick={() => setIsFullScreen(false)}
         >
           <div
-            className="modal-box bg-white max-w-[calc(100vw-32px)] max-h-[calc(100vh-120px)] overflow-hidden px-4"
+            className="fixed inset-0 modal-box bg-white w-screen h-screen max-w-full max-h-full rounded-none overflow-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-center p-4">
+            <div className="flex flex-col items-center justify-center min-h-full p-4">
               <canvas
                 ref={fullScreenCanvasRef}
-                style={{ imageRendering: 'pixelated' }}
+                style={{ imageRendering: 'pixelated', maxWidth: '100%', maxHeight: '80vh' }}
               />
-            </div>
-            <p className="text-center font-mono text-lg font-bold py-2">{value}</p>
-            <div className="modal-action">
-              <button className="btn" onClick={() => setIsFullScreen(false)}>
+              <p className="text-center font-mono text-2xl font-bold py-4">{value}</p>
+              <button className="btn btn-lg mt-4" onClick={() => setIsFullScreen(false)}>
                 Close
               </button>
             </div>
