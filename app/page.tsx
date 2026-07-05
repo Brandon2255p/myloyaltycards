@@ -75,7 +75,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="h-dvh flex flex-col overflow-hidden">
       <header className="navbar bg-base-200 shadow-sm px-6 py-4 shrink-0">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
           <div className="flex items-center gap-3">
@@ -113,7 +113,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="flex-1 p-4 overflow-y-auto">
+      <main className="flex-1 p-4 overflow-y-auto pb-safe">
         {cards.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-16">
             <p className="text-4xl mb-4">🎴</p>
