@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, ChangeEvent } from 'react';
 import Image from 'next/image';
 import { LoyaltyCard, BarcodeType, CompanyCode } from '@/types/loyalty-card';
 import { loadCards, updateUrl, copyShareUrl } from '@/lib/url-utils';
@@ -10,6 +10,7 @@ import DeleteConfirmDialog from '@/components/DeleteConfirmDialog';
 import AddToHomeScreenBanner from '@/components/AddToHomeScreenBanner';
 import ShareDialog from '@/components/ShareDialog';
 import BackupDialog from '@/components/BackupDialog';
+import { parseCardsFile, mergeImportedCards } from '@/lib/backup-file';
 
 export default function Home() {
   const [cards, setCards] = useState<LoyaltyCard[]>([]);
@@ -19,6 +20,8 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showBackupDialog, setShowBackupDialog] = useState(false);
+  const [toast, setToast] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const loadedCards = loadCards();
@@ -74,12 +77,45 @@ export default function Home() {
     setTimeout(() => setCopied(false), 2000);
   }, []);
 
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 4000);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const openImportPicker = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleImportFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const { cards: imported, invalid } = parseCardsFile(await file.text());
+      const { cards: merged, added, duplicates } = mergeImportedCards(cards, imported);
+      setCards(merged);
+      const parts: string[] = [];
+      if (duplicates) parts.push(`${duplicates} already saved`);
+      if (invalid) parts.push(`${invalid} unreadable`);
+      const extra = parts.length ? ` (${parts.join(', ')})` : '';
+      setToast({
+        type: added ? 'success' : 'info',
+        message: added
+          ? `Imported ${added} card${added === 1 ? '' : 's'}${extra}.`
+          : `No new cards to import${extra}.`,
+      });
+    } catch (err) {
+      setToast({ type: 'error', message: err instanceof Error ? err.message : 'Could not import that file.' });
+    }
+  }, [cards]);
+
   return (
     <div className="h-dvh flex flex-col overflow-hidden">
       <header className="navbar bg-base-200 shadow-sm px-6 py-4 shrink-0">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
           <div className="flex items-center gap-3">
-            <Image src="/logo.svg" alt="My Loyalty Cards logo" width={72} height={72} className="text-base-content" />
+            <Image src="/logo.svg" alt="My Loyalty Cards logo" width={48} height={48} priority />
             <h1 className="text-2xl font-bold">My Loyalty Cards</h1>
           </div>
           <div className="flex-none gap-2 flex items-center sm:ml-auto">
@@ -106,6 +142,23 @@ export default function Home() {
                 </button>
               </>
             )}
+            <button
+              className="btn btn-sm btn-outline"
+              onClick={openImportPicker}
+              title="Import cards from a backup file"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+              <span className="sr-only sm:not-sr-only">Import</span>
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={handleImportFile}
+            />
             <button className="btn btn-primary btn-sm" onClick={() => setIsAddModalOpen(true)}>
               + Add Card
             </button>
@@ -121,6 +174,9 @@ export default function Home() {
             <p className="text-base-content/60 mb-4">Add your first card to get started</p>
             <button className="btn btn-primary" onClick={() => setIsAddModalOpen(true)}>
               + Add Card
+            </button>
+            <button className="btn btn-link btn-sm mt-2" onClick={openImportPicker}>
+              Restore from a backup file
             </button>
           </div>
         ) : (
@@ -166,6 +222,18 @@ export default function Home() {
         isOpen={showBackupDialog}
         onClose={() => setShowBackupDialog(false)}
       />
+
+      {toast && (
+        <div className="toast toast-top toast-center z-50" role="status">
+          <div
+            className={`alert ${
+              toast.type === 'success' ? 'alert-success' : toast.type === 'error' ? 'alert-error' : 'alert-info'
+            }`}
+          >
+            <span>{toast.message}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
