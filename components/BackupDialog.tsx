@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { LoyaltyCard } from '@/types/loyalty-card';
 import { getWhatsAppLink, getTelegramLink, getEmailLink } from '@/lib/storage';
+import { downloadCardsFile } from '@/lib/backup-file';
 
 interface BackupDialogProps {
   cards: LoyaltyCard[];
@@ -41,6 +42,22 @@ export default function BackupDialog({ cards, isOpen, onClose }: BackupDialogPro
         </div>
 
         <div className="space-y-3">
+          <button
+            type="button"
+            className="btn btn-primary w-full"
+            onClick={() => downloadCardsFile(cards)}
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Download backup file
+          </button>
+          <p className="text-xs text-base-content/60 text-center">
+            Restore it later with the Import button.
+          </p>
+
+          <div className="divider text-xs text-base-content/60 my-1">or send a backup link</div>
+
           <a
             href={whatsappUrl}
             target="_blank"
