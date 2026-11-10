@@ -4,6 +4,7 @@
   "description": "Store and display your loyalty cards",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#0070BA",
   "icons": [
