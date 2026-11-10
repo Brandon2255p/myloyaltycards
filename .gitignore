@@ -24,8 +24,6 @@
 .DS_Store
 *.pem
 /public/sw.js
-/public/workbox-*.js
-/public/swe-worker-*.js
 /public/zxing_reader.wasm
 
 # debug
