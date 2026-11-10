@@ -3,24 +3,22 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { CompanyCode, BarcodeType, COMPANY_NAMES, COMPANY_SEARCH_TERMS } from '@/types/loyalty-card';
 import Barcode from './Barcode';
+import BarcodeTypeToggle from './BarcodeTypeToggle';
 import CardScanner from './CardScanner';
 import type { ScanResult } from '@/lib/scanner';
 
-const BARCODE_TYPES: BarcodeType[] = ['bar', 'qr'];
-const BARCODE_LABELS: Record<BarcodeType, string> = {
-  bar: 'Barcode',
-  qr: 'QR Code',
-};
+const QUICK_PICKS: { code: CompanyCode; label: string }[] = [
+  { code: 'xts', label: 'Checkers' },
+  { code: 'pnp', label: 'Pick n Pay' },
+  { code: 'cls', label: 'Clicks' },
+  { code: 'wlw', label: 'Woolworths' },
+  { code: 'dch', label: 'Dis-Chem' },
+];
 
 interface AddCardModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: (company: CompanyCode, cardNumber: string, barcodeType: BarcodeType) => void;
-}
-
-function getNextBarcodeType(current: BarcodeType): BarcodeType {
-  const idx = BARCODE_TYPES.indexOf(current);
-  return BARCODE_TYPES[(idx + 1) % BARCODE_TYPES.length];
 }
 
 export default function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalProps) {
@@ -33,7 +31,6 @@ export default function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalPro
   const dialogRef = useRef<HTMLDialogElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -97,41 +94,31 @@ export default function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalPro
     onClose();
   };
 
-  const cycleBarcodeType = useCallback(() => {
-    setBarcodeType((prev) => getNextBarcodeType(prev));
-  }, []);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
-    const delta = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(delta) > 50) {
-      cycleBarcodeType();
-    }
-    touchStartX.current = null;
-  };
-
   return (
-    <dialog ref={dialogRef} className="modal" onClose={handleClose}>
-      <div className="modal-box max-w-lg">
+    <dialog ref={dialogRef} className="modal modal-bottom sm:modal-middle" onClose={handleClose}>
+      <div className="modal-box max-h-[92dvh] rounded-t-[28px] px-5 pt-3 sm:max-w-lg sm:rounded-[28px] pb-safe">
+        <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-base-300 sm:hidden" aria-hidden="true" />
         {isScanning && (
           <CardScanner onResult={handleScanResult} onCancel={() => setIsScanning(false)} />
         )}
-        <h3 className={`font-bold text-lg mb-4 ${isScanning ? 'hidden' : ''}`}>Add Loyalty Card</h3>
+        <div className={`mb-5 flex items-center justify-between ${isScanning ? 'hidden' : ''}`}>
+          <h3 className="text-[22px] font-bold">Add a card</h3>
+          <button type="button" className="h-11 px-2 text-[15px] font-semibold text-sky-700" onClick={handleClose}>
+            Cancel
+          </button>
+        </div>
         <form onSubmit={handleSubmit} className={isScanning ? 'hidden' : ''}>
           <div className="form-control mb-4">
             <label className="label">
-              <span className="label-text">Retailer / Programme</span>
+              <span className="label-text">Retailer or programme</span>
             </label>
             <div className="relative" ref={dropdownRef}>
               <input
                 ref={searchInputRef}
                 type="text"
-                className="input input-bordered w-full pr-10"
-                placeholder="Search retailers..."
+                className="input input-bordered h-13 w-full rounded-2xl pr-10 text-base placeholder:text-base-content"
+                placeholder={COMPANY_NAMES[company]}
+                aria-label={`Retailer, currently ${COMPANY_NAMES[company]}. Type to search`}
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
@@ -174,36 +161,46 @@ export default function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalPro
                 </ul>
               )}
             </div>
+            <div className="mt-3 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
+              {QUICK_PICKS.map(({ code, label }) => (
+                <button
+                  key={code}
+                  type="button"
+                  aria-pressed={company === code}
+                  onClick={() => {
+                    setCompany(code);
+                    setSearch('');
+                    setShowDropdown(false);
+                  }}
+                  className={`h-9 shrink-0 rounded-full px-3.5 text-[13px] font-semibold ${
+                    company === code ? 'bg-sky-700 text-white' : 'bg-base-200 text-base-content/80'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="form-control mb-4">
             <label className="label">
-              <span className="label-text">Card Number</span>
+              <span className="label-text">Card number</span>
             </label>
-            <div className="join w-full">
+            <div className="flex gap-2">
               <input
                 type="text"
-                className="input input-bordered join-item flex-1"
+                className="input input-bordered h-13 min-w-0 flex-1 rounded-2xl text-[17px] font-semibold tracking-wide"
                 value={cardNumber}
                 onChange={(e) => setCardNumber(e.target.value)}
-                placeholder="Enter card number"
-                autoFocus
+                placeholder="Card number"
+                aria-label="Card number"
               />
               <button
                 type="button"
-                className="btn btn-neutral join-item"
                 onClick={() => setIsScanning(true)}
+                className="flex h-13 shrink-0 items-center gap-2 rounded-2xl bg-neutral px-4 text-[15px] font-semibold text-neutral-content active:opacity-90"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  className="h-5 w-5"
-                  aria-hidden="true"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="h-5 w-5" aria-hidden="true">
                   <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M11 8v8M14 8v8M17 8v8" />
                 </svg>
                 Scan
@@ -211,39 +208,20 @@ export default function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalPro
             </div>
           </div>
 
+          <div className="mb-4">
+            <span className="label label-text mb-1">Show as</span>
+            <BarcodeTypeToggle value={barcodeType} onChange={setBarcodeType} />
+          </div>
+
           {cardNumber.trim() && (
-            <div
-              className="mb-6 cursor-pointer"
-              onClick={cycleBarcodeType}
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-            >
-              <div className="flex justify-center items-center gap-2 py-2 text-sm text-base-content/60">
-                <span>← swipe or tap →</span>
-                <span className="font-medium text-base-content">{BARCODE_LABELS[barcodeType]}</span>
-              </div>
-              <div className="card bg-base-200">
-                <div className="card-body">
-                  <div className="flex justify-between items-center">
-                    <span className="card-title text-sm">{COMPANY_NAMES[company]}</span>
-                  </div>
-                  <p className="font-mono text-lg font-bold tracking-wider py-2">{cardNumber}</p>
-                  <div className="p-3 bg-white rounded-lg">
-                    <Barcode value={cardNumber} type={barcodeType} disableFullscreen />
-                  </div>
-                </div>
-              </div>
+            <div data-theme="light" className="mb-5 rounded-2xl border border-base-300 bg-white p-4">
+              <Barcode value={cardNumber.trim()} type={barcodeType} disableFullscreen />
             </div>
           )}
 
-          <div className="modal-action">
-            <button type="button" className="btn" onClick={handleClose}>
-              Cancel
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={!cardNumber.trim()}>
-              Add Card
-            </button>
-          </div>
+          <button type="submit" className="btn-brand h-14 w-full text-[17px]" disabled={!cardNumber.trim()}>
+            Save card
+          </button>
         </form>
       </div>
       <form method="dialog" className="modal-backdrop">

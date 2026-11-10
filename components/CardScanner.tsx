@@ -127,14 +127,19 @@ export default function CardScanner({ onResult, onCancel }: CardScannerProps) {
 
   return (
     <div>
-      <h3 className="font-bold text-lg mb-4">Scan Card</h3>
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-[22px] font-bold">Scan your card</h3>
+        <button type="button" className="h-11 px-2 text-[15px] font-semibold text-sky-700" onClick={onCancel}>
+          Back
+        </button>
+      </div>
 
       {error ? (
         <div role="alert" className="alert alert-warning mb-4 text-sm">
           <span>{error}</span>
         </div>
       ) : (
-        <div className="relative mb-2 overflow-hidden rounded-lg bg-black aspect-[4/3]">
+        <div className="relative mb-2 overflow-hidden rounded-2xl bg-black aspect-[4/3]">
           <video
             ref={videoRef}
             className="h-full w-full object-cover"
@@ -147,7 +152,10 @@ export default function CardScanner({ onResult, onCancel }: CardScannerProps) {
               <span className="loading loading-spinner loading-lg text-white" />
             </div>
           ) : (
-            <div className="pointer-events-none absolute inset-x-6 top-1/2 h-0.5 -translate-y-1/2 bg-red-500/80" />
+            <>
+              <div className="pointer-events-none absolute inset-x-8 inset-y-[22%] rounded-2xl border-2 border-white/90 shadow-[0_0_0_999px_rgba(0,0,0,0.35)]" />
+              <div className="pointer-events-none absolute inset-x-12 top-1/2 h-0.5 -translate-y-1/2 rounded-full bg-red-500/90" />
+            </>
           )}
         </div>
       )}
@@ -172,14 +180,13 @@ export default function CardScanner({ onResult, onCancel }: CardScannerProps) {
         onChange={handlePhoto}
       />
 
-      <div className="modal-action">
-        <button type="button" className="btn" onClick={onCancel}>
-          Back
-        </button>
-        <button type="button" className="btn btn-primary" onClick={() => fileInputRef.current?.click()}>
-          Scan from photo
-        </button>
-      </div>
+      <button
+        type="button"
+        className="mt-2 h-14 w-full rounded-2xl bg-base-200 text-[17px] font-bold text-base-content active:bg-base-300"
+        onClick={() => fileInputRef.current?.click()}
+      >
+        Scan from a photo instead
+      </button>
     </div>
   );
 }

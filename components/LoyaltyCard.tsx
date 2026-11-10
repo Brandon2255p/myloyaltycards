@@ -1,68 +1,40 @@
 'use client';
 
-import { useRef, useCallback } from 'react';
-import { LoyaltyCard, COMPANY_NAMES, BarcodeType } from '@/types/loyalty-card';
-import Barcode from './Barcode';
-
-const BARCODE_TYPES: BarcodeType[] = ['bar', 'qr'];
-const BARCODE_LABELS: Record<BarcodeType, string> = {
-  bar: 'Barcode',
-  qr: 'QR Code',
-};
+import { LoyaltyCard, COMPANY_NAMES } from '@/types/loyalty-card';
+import { getCardColor } from '@/lib/card-colors';
 
 interface LoyaltyCardProps {
   card: LoyaltyCard;
-  onDelete: (id: string) => void;
-  onBarcodeTypeChange: (id: string, barcodeType: BarcodeType) => void;
+  onOpen: (id: string) => void;
 }
 
-function getNextBarcodeType(current: BarcodeType): BarcodeType {
-  const idx = BARCODE_TYPES.indexOf(current);
-  return BARCODE_TYPES[(idx + 1) % BARCODE_TYPES.length];
-}
-
-export default function LoyaltyCardComponent({ card, onDelete, onBarcodeTypeChange }: LoyaltyCardProps) {
-  const touchStartX = useRef<number | null>(null);
-
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  }, []);
-
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
-    const delta = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(delta) > 50) {
-      onBarcodeTypeChange(card.id, getNextBarcodeType(card.barcodeType));
-    }
-    touchStartX.current = null;
-  }, [card.id, card.barcodeType, onBarcodeTypeChange]);
+export default function LoyaltyCardComponent({ card, onOpen }: LoyaltyCardProps) {
+  const name = COMPANY_NAMES[card.company] ?? card.company;
 
   return (
-    <div
-      className="card bg-base-100 shadow-xl"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+    <button
+      type="button"
+      onClick={() => onOpen(card.id)}
+      className="relative flex h-28 w-full flex-col items-start overflow-hidden rounded-2xl p-3.5 text-left text-white shadow-md transition-transform active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+      style={{ backgroundColor: getCardColor(card.company) }}
+      aria-label={`Show ${name} card ending ${card.cardNumber.slice(-4)}`}
     >
-      <div className="card-body">
-        <div className="flex justify-between items-center">
-          <span className="card-title">{COMPANY_NAMES[card.company]}</span>
-          <button
-            onClick={() => onDelete(card.id)}
-            className="btn btn-ghost btn-sm"
-            aria-label="Delete card"
-          >
-            ✕
-          </button>
-        </div>
-        <p className="font-mono text-2xl font-bold tracking-wider py-4">{card.cardNumber}</p>
-        <div className="flex justify-center items-center gap-2 py-2 text-sm text-base-content/60">
-          <span>← swipe →</span>
-          <span className="font-medium text-base-content">{BARCODE_LABELS[card.barcodeType]}</span>
-        </div>
-        <div className="mt-2 p-4 bg-white rounded-lg">
-          <Barcode value={card.cardNumber} type={card.barcodeType} />
-        </div>
-      </div>
-    </div>
+      <span aria-hidden="true" className="absolute -right-10 -top-12 h-32 w-32 rounded-full bg-white/10" />
+      <span className="relative block text-[15px] font-bold leading-tight line-clamp-2">{name}</span>
+      <span className="absolute bottom-3.5 left-3.5 text-[13px] font-semibold tracking-wide text-white/90">
+        •••• {card.cardNumber.slice(-4)}
+      </span>
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 34 22"
+        className="absolute bottom-3.5 right-3.5 h-[22px] w-[34px] fill-white"
+      >
+        {card.barcodeType === 'qr' ? (
+          <path d="M6 0h9v9H6zM8.5 2.5v4h4v-4zM19 0h9v9h-9zM21.500 2.500v4h4v-4zM6 13h9v9H6zM8.500 15.500v4h4v-4zM19 13h4v4h-4zM24 18h4v4h-4z" fillRule="evenodd" />
+        ) : (
+          <path d="M0 0h2v22h-2zM5 0h3v22h-3zM13 0h6v22h-6zM21 0h6v22h-6zM29 0h4v22h-4z" />
+        )}
+      </svg>
+    </button>
   );
 }
