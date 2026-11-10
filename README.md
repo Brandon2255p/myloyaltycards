@@ -6,18 +6,24 @@ A lightweight, privacy-first PWA for storing and displaying your loyalty cards �
 
 Your cards live entirely in the URL. Add a card, copy the link, bookmark it or save it to your home screen. That's it.
 
+<p align="center">
+  <img src="design/card-swipe.gif" alt="Opening a card from the grid, swiping to the next two cards, then tapping Done" width="300" />
+</p>
+
 ## Features
 
 - **Scan to add** — point your camera at the barcode or QR code on a physical card and the number and code type are filled in for you
 - **Scan from a photo** — pick a photo or screenshot of a card instead of using the live camera
-- **Manual entry** — type the card number and tap the preview to switch between Barcode and QR Code
+- **Manual entry** — type the card number and choose whether to show it as a Barcode or a QR code
+- **Card grid with search** — every card is a colour-coded tile; search by store name, keyword or card number
 - **Searchable retailer list** — find a store or programme by name or keyword (see [Supported Stores](#supported-stores))
 - **URL-based storage** — cards are encoded in the query string; nothing is stored server-side
 - **Share via link** — choose which cards to include, then copy the link and send it to yourself or anyone else
 - **Import from a link** — opening a shared link lets you add its cards to the ones you already have
 - **Backup and restore** — export your cards to a file and import them again on another device
 - **Barcode rendering** — each card is shown as a Code 128 barcode or a QR code
-- **Full-screen barcode** — tap any barcode to open it full-screen for scanning at the till
+- **Full-screen scan view** — tap a card to open its barcode full-screen for scanning at the till
+- **Swipe between cards** — swipe left or right in the scan view (or use the arrow keys) to move to the next card without going back to the grid
 - **Offline support** — works without a connection once loaded (PWA service worker), including the scanner
 - **Add to Home Screen** — installable on iOS and Android for quick access
 
@@ -25,9 +31,15 @@ Your cards live entirely in the URL. Add a card, copy the link, bookmark it or s
 
 ### Adding a card
 
-1. Tap **Add Card** and pick the retailer or programme.
+1. Tap **+ Add card** and pick the retailer or programme.
 2. Either type the card number, or tap **Scan** next to the number field.
-3. Check the preview, tap it to switch between Barcode and QR Code if needed, then tap **Add Card**.
+3. Under **Show as**, pick Barcode or QR code, check the preview, then tap **Save card**.
+
+### Using a card
+
+1. Tap a card in the grid to open it full-screen.
+2. Hold the barcode or QR code up to the scanner at the till. You can switch between Barcode and QR code here too.
+3. Swipe left or right for your next card, or tap **Done** to go back to the grid.
 
 ### Scanning
 
