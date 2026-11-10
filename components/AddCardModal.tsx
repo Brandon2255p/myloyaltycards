@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { CompanyCode, BarcodeType, COMPANY_NAMES, COMPANY_SEARCH_TERMS } from '@/types/loyalty-card';
 import Barcode from './Barcode';
+import CardScanner from './CardScanner';
+import type { ScanResult } from '@/lib/scanner';
 
 const BARCODE_TYPES: BarcodeType[] = ['bar', 'qr'];
 const BARCODE_LABELS: Record<BarcodeType, string> = {
@@ -27,6 +29,7 @@ export default function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalPro
   const [barcodeType, setBarcodeType] = useState<BarcodeType>('bar');
   const [search, setSearch] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -51,6 +54,7 @@ export default function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalPro
       setCompany('pnp');
       setCardNumber('');
       setBarcodeType('bar');
+      setIsScanning(false);
     }
   }, [isOpen]);
 
@@ -83,6 +87,12 @@ export default function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalPro
     }
   };
 
+  const handleScanResult = useCallback((result: ScanResult) => {
+    setCardNumber(result.cardNumber);
+    setBarcodeType(result.barcodeType);
+    setIsScanning(false);
+  }, []);
+
   const handleClose = () => {
     onClose();
   };
@@ -105,10 +115,13 @@ export default function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalPro
   };
 
   return (
-    <dialog ref={dialogRef} className="modal">
+    <dialog ref={dialogRef} className="modal" onClose={handleClose}>
       <div className="modal-box max-w-lg">
-        <h3 className="font-bold text-lg mb-4">Add Loyalty Card</h3>
-        <form onSubmit={handleSubmit}>
+        {isScanning && (
+          <CardScanner onResult={handleScanResult} onCancel={() => setIsScanning(false)} />
+        )}
+        <h3 className={`font-bold text-lg mb-4 ${isScanning ? 'hidden' : ''}`}>Add Loyalty Card</h3>
+        <form onSubmit={handleSubmit} className={isScanning ? 'hidden' : ''}>
           <div className="form-control mb-4">
             <label className="label">
               <span className="label-text">Retailer / Programme</span>
@@ -167,14 +180,35 @@ export default function AddCardModal({ isOpen, onClose, onAdd }: AddCardModalPro
             <label className="label">
               <span className="label-text">Card Number</span>
             </label>
-            <input
-              type="text"
-              className="input input-bordered"
-              value={cardNumber}
-              onChange={(e) => setCardNumber(e.target.value)}
-              placeholder="Enter card number"
-              autoFocus
-            />
+            <div className="join w-full">
+              <input
+                type="text"
+                className="input input-bordered join-item flex-1"
+                value={cardNumber}
+                onChange={(e) => setCardNumber(e.target.value)}
+                placeholder="Enter card number"
+                autoFocus
+              />
+              <button
+                type="button"
+                className="btn btn-neutral join-item"
+                onClick={() => setIsScanning(true)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  className="h-5 w-5"
+                  aria-hidden="true"
+                >
+                  <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M11 8v8M14 8v8M17 8v8" />
+                </svg>
+                Scan
+              </button>
+            </div>
           </div>
 
           {cardNumber.trim() && (
