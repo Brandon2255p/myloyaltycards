@@ -6,6 +6,7 @@
     "copy-wasm": "node scripts/copy-wasm.mjs",
     "predev": "node scripts/copy-wasm.mjs",
     "prebuild": "node scripts/copy-wasm.mjs",
+    "postbuild": "node scripts/build-sw.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

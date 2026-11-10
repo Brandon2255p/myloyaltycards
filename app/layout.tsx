@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
     <html lang="en" className="h-full overflow-hidden">
       <body className={`${geistSans.variable} ${geistMono.variable} h-full antialiased overflow-hidden`}>
         {children}
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
